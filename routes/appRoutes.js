@@ -4,4 +4,6 @@ module.exports = app => {
     /* ROUTES */
     /* Get Result */
     app.get('/getResult', appController.getResults);
+    /* UploadFile */
+    app.post('/uploadFile', appController.uploadFile);
 };
