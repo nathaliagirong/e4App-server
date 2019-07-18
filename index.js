@@ -12,12 +12,12 @@ app.use(fileUpload());
 app.listen(5000, () => {
     console.log("MongoDB and server connected");
 });
-
-
 /* IMPORT ROUTER MODULES */
-app.get("/getResult", (req, res) => {
+app.get("/", (req, res) => {
     res.send({
-        respuesta: true,
-        description: 'Usted está fibrilando'
+        description: 'Access denied',
+        response: []
     });
-})
+});
+
+const routesApp = require("./routes/appRoutes")(app);
