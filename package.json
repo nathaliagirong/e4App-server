@@ -1,14 +1,20 @@
 {
   "name": "e4app-server",
   "version": "1.0.0",
-  "description": "e4app Server",
+  "description": "Backend fot e4App",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }
