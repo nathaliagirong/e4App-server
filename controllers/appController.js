@@ -1,8 +1,12 @@
+const path = require('path');
+const { spawn } = require('child_process');
+
+
 module.exports = {
-    
+
     uploadFile: async (req, res) => {
         try {
-            const { nameFile } = req.body;
+            let { nameFile } = req.body;
             if (Object.keys(req.files).length == 0) {
                 return res.status(400).send({
                     code: 400,
@@ -15,6 +19,20 @@ module.exports = {
                 const path = `../opnym-backend/image-records/${nameFile}`;
                 if (err)
                     return res.status(500).send(err);
+
+                const subprocess = runScript();
+
+                // print output of script
+                subprocess.stdout.on('data', (data) => {
+                    console.log(`data:${data}`);
+                });
+                subprocess.stderr.on('data', (data) => {
+                    console.log(`error:${data}`);
+                });
+                subprocess.stderr.on('close', () => {
+                    console.log("Closed");
+                });
+
 
                 res.status(200).send({
                     code: 200,
@@ -48,5 +66,17 @@ module.exports = {
             });
         }
     },
-
 }
+
+
+function runScript() {
+    console.log('ENTRA A LA FUNCIÓN');
+    return spawn('python', [
+        "-u",
+        path.join(__dirname, 'script.py'),
+        "--foo", "Test E4",
+    ]);
+}
+
+
+
