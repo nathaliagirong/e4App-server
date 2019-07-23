@@ -1,6 +1,6 @@
 const path = require('path');
 const { spawn } = require('child_process');
-
+const dataRegister = require('../models/dataRegisterModel');
 
 module.exports = {
 
@@ -42,6 +42,28 @@ module.exports = {
             });
         } catch (error) {
             console.log('uploat request error', error); // the uploaded file object
+            res.status(500).send({
+                code: 500,
+                description: 'Server error',
+                message: error
+            });
+        }
+    },
+
+    /* Upload Data */
+    uploadData: async (req, res) => {
+        try {
+            let register = req.body;
+            dataRegister.create(register, function (err, response) {
+                const dataResult = response;
+                res.send({
+                    code: 200,
+                    description: 'success',
+                    response: dataResult
+                });
+            });
+        } catch (error) {
+            console.log('Error uploadData: ' + error);
             res.status(500).send({
                 code: 500,
                 description: 'Server error',

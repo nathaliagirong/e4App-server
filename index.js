@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require("body-parser");
+const mongo = require('./db/conectionMongo');
 const fileUpload = require('express-fileupload');
 const app = express();
 
@@ -9,9 +10,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(fileUpload());
 
-app.listen(5000, () => {
-    console.log("MongoDB and server connected");
-});
 /* IMPORT ROUTER MODULES */
 app.get("/", (req, res) => {
     res.send({
@@ -21,3 +19,5 @@ app.get("/", (req, res) => {
 });
 
 const routesApp = require("./routes/appRoutes")(app);
+
+mongo.conectar(app);
