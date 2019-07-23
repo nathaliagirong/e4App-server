@@ -1,6 +1,7 @@
 const path = require('path');
 const { spawn } = require('child_process');
 const dataRegister = require('../models/dataRegisterModel');
+const resultData = require('../models/resultModel');
 
 module.exports = {
 
@@ -8,6 +9,7 @@ module.exports = {
         try {
             console.log('uploadfile');
             let nameFile = 'file.csv';
+            let { date } = req.body;
             if (Object.keys(req.files).length == 0) {
                 return res.status(400).send({
                     code: 400,
@@ -25,13 +27,23 @@ module.exports = {
 
                 // print output of script
                 subprocess.stdout.on('data', (data) => {
-                    console.log(`data:${data}`);
+                    switch (`${data}`) {
+                        case 'true\n':
+                            pushData(date, true);
+                            break;
+                        case 'false\n':
+                            pushData(date, false);
+                            break;
+                        default:
+                            console.log('nothing');
+                            break;
+                    }
                 });
                 subprocess.stderr.on('data', (data) => {
                     console.log(`error:${data}`);
                 });
                 subprocess.stderr.on('close', () => {
-                    console.log("Closed");
+                    // console.log("Closed");
                 });
 
 
@@ -53,6 +65,7 @@ module.exports = {
 
     /* Upload Data */
     uploadData: async (req, res) => {
+        console.log('request uploadData');
         try {
             let register = req.body;
             dataRegister.create(register, function (err, response) {
@@ -93,12 +106,26 @@ module.exports = {
 
 
 function runScript() {
-    console.log('ENTRA A LA FUNCIÓN');
     return spawn('python', [
         "-u",
         path.join(__dirname, 'script.py'),
         "--foo", "Test E4",
     ]);
+}
+
+function pushData(date, result) {
+    try {
+        const object = {
+            dateId: date,
+            result: result
+        }
+        resultData.create(object, function (err, response) {
+            const dataResult = response;
+            console.log('RESPONSE STORED DATA', dataResult);
+        });
+    } catch (error) {
+        console.log('Error upload result: ' + error);
+    }
 }
 
 
