@@ -89,15 +89,25 @@ module.exports = {
     getResults: async (req, res) => {
         try {
             console.log('getResults request');
-            res.send({
-                code: 200,
-                description: 'success',
-                response: true
-            });
+            const dateId = req.query.dateId;
+            const result = await resultData.findOne({ dateId: dateId });
+            if (result) {
+                res.send({
+                    code: 200,
+                    description: 'success',
+                    response: result
+                });
+            } else {
+                res.send({
+                    code: 404,
+                    description: 'not found',
+                    response: {}
+                });
+            }
         } catch (error) {
             res.status(500).send({
                 code: 500,
-                description: 'serverError',
+                description: 'server error',
                 message: error
             });
         }
