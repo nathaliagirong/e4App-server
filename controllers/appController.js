@@ -6,7 +6,8 @@ module.exports = {
 
     uploadFile: async (req, res) => {
         try {
-            let { nameFile } = req.body;
+            console.log('uploadfile');
+            let nameFile = 'file.csv';
             if (Object.keys(req.files).length == 0) {
                 return res.status(400).send({
                     code: 400,
@@ -16,7 +17,7 @@ module.exports = {
             }
             let e4File = req.files.e4File;
             e4File.mv(`../e4App-server/e4-records/${nameFile}`, function (err) {
-                const path = `../opnym-backend/image-records/${nameFile}`;
+                const path = `../e4App-server/e4-records/${nameFile}`;
                 if (err)
                     return res.status(500).send(err);
 
