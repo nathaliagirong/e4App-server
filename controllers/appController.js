@@ -10,6 +10,7 @@ module.exports = {
             console.log('uploadfile');
             let nameFile = 'file.csv';
             let { date } = req.body;
+            let indexResult = 0;
             if (Object.keys(req.files).length == 0) {
                 return res.status(400).send({
                     code: 400,
@@ -18,8 +19,8 @@ module.exports = {
                 });
             }
             let e4File = req.files.e4File;
-            e4File.mv(`../e4App-server/e4-records/${nameFile}`, function (err) {
-                const path = `../e4App-server/e4-records/${nameFile}`;
+            e4File.mv(`../e4App-server/controllers/${nameFile}`, function (err) {
+                const path = `../e4App-server/controllers/${nameFile}`;
                 if (err)
                     return res.status(500).send(err);
 
@@ -27,11 +28,17 @@ module.exports = {
 
                 // print output of script
                 subprocess.stdout.on('data', (data) => {
-                    switch (`${data}`) {
-                        case 'true\n':
+                    console.log(`${data}`);
+                    if ((`${data}`).includes('true')) {
+                        indexResult = 1;
+                    } else if ((`${data}`).includes('false')) {
+                        indexResult = 2;
+                    }
+                    switch (indexResult) {
+                        case 1:
                             pushData(date, true);
                             break;
-                        case 'false\n':
+                        case 2:
                             pushData(date, false);
                             break;
                         default:
@@ -43,6 +50,9 @@ module.exports = {
                     console.log(`error:${data}`);
                 });
                 subprocess.stderr.on('close', () => {
+                    if (indexResult === 0) {
+                        console.log('Definir evento de error');
+                    }
                     // console.log("Closed");
                 });
 
@@ -117,13 +127,12 @@ module.exports = {
 
 function runScript() {
     return spawn('python', [
-        "-u",
-        path.join(__dirname, 'script.py'),
-        "--foo", "Test E4",
+        path.join(__dirname, 'script.py')
     ]);
 }
 
 function pushData(date, result) {
+    console.log('OK');
     try {
         const object = {
             dateId: date,
